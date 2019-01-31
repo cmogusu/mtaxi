@@ -17,21 +17,15 @@ type Props = {
 
 class App extends React.Component<Props> {
   addTask = (event) => {
+    event.preventDefault();
+
     const { currentTarget } = event;
     const { newTaskInput } = currentTarget;
     const { value: title } = newTaskInput;
-    const { currentUser } = this.props;
-    const { username, _id: owner } = currentUser;
 
-    Tasks.insert({
-      title,
-      owner,
-      username,
-      createdAt: new Date(),
-    });
+    Meteor.call('tasks.insert', title);
 
     newTaskInput.value = '';
-    event.preventDefault();
   };
 
 
@@ -41,7 +35,7 @@ class App extends React.Component<Props> {
       incompleteCount,
       currentUser,
     } = this.props;
-console.log(currentUser);
+
     return (
       <div>
         <header>
@@ -74,12 +68,16 @@ console.log(currentUser);
   }
 }
 
-export default withTracker(() => ({
-  tasks: Tasks.find({}, {
-    sort: {
-      createdAt: -1,
-    },
-  }).fetch(),
-  incompleteCount: Tasks.find({ checked: { $ne: true } }).count(),
-  currentUser: Meteor.user(),
-}))(App);
+export default withTracker(() => {
+  Meteor.subscribe('doggy');
+
+  return {
+    tasks: Tasks.find({}, {
+      sort: {
+        createdAt: -1,
+      },
+    }).fetch(),
+    incompleteCount: Tasks.find({ checked: { $ne: true } }).count(),
+    currentUser: Meteor.user(),
+  };
+})(App);

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import Tasks from '../api/tasks.js';
+import { Meteor } from 'meteor/meteor';
+
 
 type Props = {
   _id: number,
@@ -17,7 +18,7 @@ class Task extends Component<Props> {
   delete = () => {
     const { _id } = this.props;
 
-    Tasks.remove(_id);
+    Meteor.call('tasks.remove', _id);
   };
 
   toggleIsChecked = (event) => {
@@ -25,11 +26,7 @@ class Task extends Component<Props> {
     const { checked } = currentTarget;
     const { _id } = this.props;
 
-    Tasks.update(_id, {
-      $set: {
-        checked,
-      },
-    });
+    Meteor.call('tasks.setChecked', _id, checked);
   }
 
   render() {
@@ -45,7 +42,7 @@ class Task extends Component<Props> {
         &nbsp;
         <input type="checkbox" readOnly onClick={this.toggleIsChecked} checked={checked} />
         &nbsp;
-        {username}
+        <span style={{ color: '#aaa' }}>{username}</span>
         &nbsp;
         {title}
         &nbsp;
