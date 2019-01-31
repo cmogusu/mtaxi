@@ -11,14 +11,24 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.1.5",
+    "@date-io/date-fns": "^1.0.2",
+    "@material-ui/core": "^3.9.1",
+    "@material-ui/icons": "^3.0.2",
+    "@material-ui/lab": "^3.0.0-alpha.29",
+    "@material-ui/styles": "^3.0.0-alpha.9",
     "bcrypt": "^3.0.3",
+    "date-fns": "^2.0.0-alpha.27",
+    "jss": "^9.7.0",
+    "lodash": "^4.17.11",
+    "material-ui-pickers": "^2.1.2",
     "meteor-node-stubs": "^0.4.1",
     "react": "^16.5.0",
-    "react-dom": "^16.5.0"
+    "react-dom": "^16.5.0",
+    "react-router-dom": "^4.3.1"
   },
   "meteor": {
     "mainModule": {
-      "client": "client/main.jsx",
+      "client": "client/main.js",
       "server": "server/main.js"
     },
     "testModule": "tests/main.js"
