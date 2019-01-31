@@ -14,7 +14,9 @@ type Props = {
 };
 
 class Bookings extends React.Component<Props> {
-  selectedIndex = 0;
+  state = {
+    isAddingNewBooking: false,
+  }
 
   setSelected = (index) => {
     this.selectedIndex = index;
@@ -22,6 +24,7 @@ class Bookings extends React.Component<Props> {
 
   render() {
     const { currentUser, bookings } = this.props;
+    const { isAddingNewBooking } = this.state;
 
     if (!currentUser) {
       return 'Please log in';
@@ -29,23 +32,39 @@ class Bookings extends React.Component<Props> {
 
     return (
       <div>
-        <form onSubmit={this.addNew}>
-          <TextField type="text" name="img" defaultValue="http://localhost/i/car1.png" placeholder="Image" label="Image" />
-          <TextField type="text" name="name" defaultValue="car 1" placeholder="name" label="Name" />
-          <TextField type="text" name="vehicleClass" defaultValue="standard" placeholder="class" label="Class" />
-          <TextField type="text" name="passengers" defaultValue="2" placeholder="passengers" label="Passengers" />
-          <TextField type="text" name="luggage" defaultValue="3" placeholder="luggage" label="luggage" />
-          <TextField type="text" name="price" defaultValue="9" placeholder="price" label="price" />
-          <button type="submit">
+        {isAddingNewBooking ? (
+          <form onSubmit={this.addNew}>
+            <td>{origin.name}</td>
+            <td>{destination.name}</td>
+            <td>{waypoints.map(waypoint => <div>{waypoint.name}</div>)}</td>
+            <td>{date}</td>
+            <td>{isReturnJourney ? 'yes' : 'no'}</td>
+            <td>{passengers}</td>
+            <td>{totalDistance}</td>
+            <td>{totalDuration}</td>
+            <button type="submit">
+              Add new
+            </button>
+          </form>
+        ) : (
+          <button type="button" onClick={() => this.setState({ isAddingNewBooking: true })}>
             Add new
           </button>
-        </form>
+        )}
 
-        <div>
-          {bookings.map(booking => (
-            <Booking key={booking._id} {...booking} isSelected={this.setSelected} />
-          ))}
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <td></td>
+              <td></td>
+            </tr>
+          </thead>
+          <tbody>
+            {bookings.map(booking => (
+              <Booking key={booking._id} {...booking} isSelected={this.setSelected} />
+            ))}
+          </tbody>
+        </table>
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
-import { isError } from 'lodash';
+import { isError, isEmpty } from 'lodash';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import Slider from '@material-ui/lab/Slider';
@@ -23,10 +23,33 @@ function setLocation(name, lat, lng) {
   };
 }
 
-class Home extends React.Component {
-  timeDelayInMinutes = 30;
 
-  defaultState = {
+type GMapsLocations = {
+  lat: Function,
+  lng: Function,
+};
+
+type Location = {
+  name: string,
+  location: GMapsLocations,
+};
+
+type Props = {
+  origin?: Location,
+  destination?: Location,
+  waypoints?: Array<Location>,
+  hasSubmited?: boolean,
+  date?: {},
+  isReturnJourney?: boolean,
+  passengers?: number,
+  totalDistance?: number,
+  totalDuration?: number,
+};
+
+class Home extends React.Component<Props> {
+  static timeDelayInMinutes = 30;
+
+  static defaultProps = {
     origin: setLocation('Aberdeen, UK', 57.149717, -2.094278000000031),
     destination: setLocation('Aylesbury, UK', 51.815606, -0.808400000000006),
     waypoints: [
@@ -35,20 +58,23 @@ class Home extends React.Component {
       setLocation('Birmingham, UK', 52.48624299999999, -1.8904009999999971),
     ],
     hasSubmited: false,
-    date: addMinutes(new Date(), this.timeDelayInMinutes),
-    dateError: '',
+    date: addMinutes(new Date(), Home.timeDelayInMinutes),
     isReturnJourney: false,
     passengers: 1,
     totalDistance: 0,
     totalDuration: 0,
   };
 
+  state = {
+    dateError: '',
+  };
+
   constructor(props) {
     super(props);
-    this.state = this.defaultState;
 
-    // distanceInWords(new Date(), addSeconds(new Date(), 5000));
+    this.state = { ...this.state, ...props };
   }
+
 
   setPlace = (placeData, place, waypointIndex) => {
     if (!placeData || isError(placeData) || !placeData.geometry) {
@@ -66,7 +92,7 @@ class Home extends React.Component {
       },
     };
 
-    console.log( name, { lat: location.lat(), lng: location.lng() });
+    console.log(name, { lat: location.lat(), lng: location.lng() });
 
     if (place === 'waypoints') {
       const newWaypoints = waypoints.slice();
@@ -122,6 +148,16 @@ class Home extends React.Component {
     return inputs;
   }
 
+  clear = () => {
+    this.setState({
+      origin: null,
+      destination: null,
+      waypoints: [],
+      hasSubmited: false,
+      date: addMinutes(new Date(), this.timeDelayInMinutes),
+    });
+  }
+
 
   makeBooking = () => {
     const booking = this.state;
@@ -129,8 +165,10 @@ class Home extends React.Component {
     delete booking.dateError;
 
     console.log(booking);
-    //Meteor.call('bookings.addNew', booking);
-    this.setState({ hasSubmited: true });
+
+    // Meteor.call('bookings.addNew', booking);
+
+    // this.setState({ hasSubmited: true });
   }
 
 
@@ -230,7 +268,7 @@ class Home extends React.Component {
                 Get Quotes
               </Button>
               <Button
-                onClick={() => this.setState(this.defaultState)}
+                onClick={() => this.clear}
                 disabled={!(origin && destination && !dateError)}
               >
                 Reset
@@ -238,7 +276,7 @@ class Home extends React.Component {
             </div>
           </div>
         </div>
-        { hasSubmited && (
+        {hasSubmited && (
           <div className="col-sm-6">
             <Map
               {...{

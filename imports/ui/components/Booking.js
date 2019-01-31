@@ -1,52 +1,88 @@
 import React from 'react';
+import { map } from 'lodash';
 
 type Props = {
-  img: string,
-  name: string,
-  vehicleClass: string,
-  passengers: number,
-  luggage: number,
-  price: number,
-  isSelected: Function,
+  origin?: Location,
+  destination?: Location,
+  waypoints?: Array<Location>,
+  hasSubmited?: boolean,
+  date?: {},
+  isReturnJourney?: boolean,
+  passengers?: number,
+  totalDistance?: number,
+  totalDuration?: number,
 };
 
-function Booking(props: Props) {
-  const {
-    img,
-    name,
-    vehicleClass,
-    passengers,
-    luggage,
-    price,
-    isSelected,
-  } = props;
+class Booking extends React.Component<Props> {
+  static defaultProps = {
+    origin: {
+      name: '',
+    },
+    destination: {
+      name: '',
+    },
+    waypoints: [],
+    date: new Date(),
+    isReturnJourney: false,
+    passengers: 1,
+    totalDistance: 0,
+    totalDuration: 0,
+  };
 
-  return (
-    <div className="row">
-      <div className="col-sm-4">
-        <img className="img-fluid" src={img} alt={name} />
-      </div>
-      <div className="col-sm-4">
-        <h5>{name}</h5>
-        <p>{vehicleClass}</p>
-        <p>
-          <span>
-            passengers:&nbsp;
-            {passengers}
-          </span>
-          <br />
-          <span>
-            luggage:&nbsp;
-            {luggage}
-          </span>
-        </p>
-      </div>
-      <div className="col-sm-4">
-        <h4>{price}</h4>
-        <button type="submit" onClick={isSelected}>Select Vehicle</button>
-      </div>
-    </div>
-  );
+  state = {
+    isEditing: false,
+  };
+
+  edit = () => {
+
+  };
+
+  delete = () => {
+
+  };
+
+  render() {
+    const {
+      origin,
+      destination,
+      waypoints,
+      date,
+      isReturnJourney,
+      passengers,
+      totalDistance,
+      totalDuration,
+    } = this.props;
+
+    const { isEditing } = this.state;
+
+    return isEditing ? (
+      <tr>
+        <td>{origin.name}</td>
+        <td>{destination.name}</td>
+        <td>{waypoints.map(waypoint => <div>{waypoint.name}</div>)}</td>
+        <td>{date}</td>
+        <td>{isReturnJourney ? 'yes' : 'no'}</td>
+        <td>{passengers}</td>
+        <td>{totalDistance}</td>
+        <td>{totalDuration}</td>
+      </tr>
+    ) : (
+      <tr>
+        <td>{origin.name}</td>
+        <td>{destination.name}</td>
+        <td>{waypoints.map(waypoint => <div>{waypoint.name}</div>)}</td>
+        <td>{date}</td>
+        <td>{isReturnJourney ? 'yes' : 'no'}</td>
+        <td>{passengers}</td>
+        <td>{totalDistance}</td>
+        <td>{totalDuration}</td>
+        <td>
+          <button type="button" onClick={this.edit}>edit</button>
+          <button type="button" onClick={this.remove}>delete</button>
+        </td>
+      </tr>
+    );
+  }
 }
 
 export default Booking;

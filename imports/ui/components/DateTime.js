@@ -13,7 +13,12 @@ type Props = {
 
 
 function DateTime(props: Props) {
-  const { onChange, date, label, minDate } = props;
+  const {
+    onChange,
+    date,
+    label,
+    minDate
+  } = props;
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -23,6 +28,7 @@ function DateTime(props: Props) {
         value={date}
         onChange={onChange}
         minDate={minDate}
+        fullWidth
         disablePast
         clearable
       />

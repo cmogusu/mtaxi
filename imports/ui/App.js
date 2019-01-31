@@ -12,6 +12,7 @@ import Home from './pages/Home.js';
 import Vehicles from './pages/Vehicles.js';
 import Bookings from './pages/Bookings.js';
 import AccountsUiWrapper from './AccountsUiWrapper.js';
+import TestBooking from './components/TestBooking.js';
 
 type Props = {
   currentUser: {
@@ -41,6 +42,9 @@ function App(props: Props) {
                 <li>
                   <NavLink to="/bookings">Bookings</NavLink>
                 </li>
+                <li>
+                  <NavLink to="/small">Small</NavLink>
+                </li>
               </ul>
 
               <hr />
@@ -49,8 +53,9 @@ function App(props: Props) {
         </div>
         <div>
           <Route exact path="/" component={Home} />
-          <Route path="/autocomplete" component={Bookings} />
-          <Route path="/distance-matrix" component={Vehicles} />
+          <Route path="/vehicles" component={Vehicles} />
+          <Route path="/bookings" component={Bookings} />
+          <Route path="/small" component={TestBooking} />
         </div>
       </div>
     </Router>

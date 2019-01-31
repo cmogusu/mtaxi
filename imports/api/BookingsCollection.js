@@ -45,6 +45,15 @@ BookingsCollection.schema = new SimpleSchema({
     type: String,
     label: 'User id of owner',
   },
+  origin?: Location,
+  destination?: Location,
+  waypoints?: Array<Location>,
+  hasSubmited?: boolean,
+  date?: {},
+  isReturnJourney?: boolean,
+  passengers?: number,
+  totalDistance?: number,
+  totalDuration?: number,
 });
 */
 
@@ -53,20 +62,21 @@ if (Meteor.isServer) {
 }
 
 Meteor.methods({
-  'bookings.addNew'(vehicle) {
-    check(vehicle, Object);
-    forEach(vehicle, vehicleProp => check(vehicleProp, String));
+  'bookings.addNew'(booking) {
+    check(booking, Object);
 
     if (!this.userId) {
       throw new Meteor.Error('no way in looser!');
     }
 
     const obj = {
-      ...vehicle,
+      ...booking,
       createdAt: new Date(),
       owner: this.userId,
       username: Meteor.users.findOne(this.userId).username,
     };
+    
+    console.log('booking now', obj);
 
     BookingsCollection.insert(obj);
   },
