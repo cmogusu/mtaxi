@@ -5,14 +5,12 @@ import {
   BrowserRouter as Router,
   Route,
   NavLink,
-  Link,
 } from 'react-router-dom';
 import { withTracker } from 'meteor/react-meteor-data';
 import Home from './pages/Home.js';
 import Vehicles from './pages/Vehicles.js';
 import Bookings from './pages/Bookings.js';
 import AccountsUiWrapper from './AccountsUiWrapper.js';
-import TestBooking from './components/TestBooking.js';
 
 type Props = {
   currentUser: {
@@ -23,39 +21,35 @@ type Props = {
 
 function App(props: Props) {
   const { currentUser } = props;
-  // const { username } = currentUser;
+  const activeStyle = {
+    fontWeight: 'bold',
+  };
 
   return (
     <Router>
       <div>
-        <div>
-          <AccountsUiWrapper />
-          {currentUser && (
-            <div>
-              <ul className="nav">
-                <li>
-                  <Link to="/">Home</Link>
+        <div className="mb-3">
+          <nav className="navbar navbar-expand-lg navbar-light bg-light">
+            <AccountsUiWrapper />
+            {currentUser && (
+              <ul className="nav justify-content-end">
+                <li className="nav-item">
+                  <NavLink strict className="nav-link" activeStyle={activeStyle} to="/">Home</NavLink>
                 </li>
-                <li>
-                  <NavLink to="/vehicles">Vehicles</NavLink>
+                <li className="nav-item">
+                  <NavLink className="nav-link" activeStyle={activeStyle} to="/vehicles">Vehicles</NavLink>
                 </li>
-                <li>
-                  <NavLink to="/bookings">Bookings</NavLink>
-                </li>
-                <li>
-                  <NavLink to="/small">Small</NavLink>
+                <li className="nav-item">
+                  <NavLink className="nav-link" activeStyle={activeStyle} to="/bookings">Bookings</NavLink>
                 </li>
               </ul>
-
-              <hr />
-            </div>
-          )}
+            )}
+          </nav>
         </div>
         <div>
           <Route exact path="/" component={Home} />
           <Route path="/vehicles" component={Vehicles} />
           <Route path="/bookings" component={Bookings} />
-          <Route path="/small" component={TestBooking} />
         </div>
       </div>
     </Router>
@@ -64,5 +58,5 @@ function App(props: Props) {
 
 
 export default withTracker(() => ({
-  currentUser: Meteor.user,
+  currentUser: Meteor.user(),
 }))(App);

@@ -1,190 +1,53 @@
+// @flow
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
-import { isError, isEmpty } from 'lodash';
-import Button from '@material-ui/core/Button';
-import Fab from '@material-ui/core/Fab';
-import Slider from '@material-ui/lab/Slider';
-import {
-  addMinutes,
-  isBefore,
-  // distanceInWords,
-} from 'date-fns';
-
-import Autocomplete from './Autocomplete.js';
 import Map from './Map.js';
-import Vehicles from './Vehicles.js';
-import DateTime from './DateTime.js';
-import Checkbox from './Checkbox.js';
+import SmallBookingForm from './SmallBookingForm.js';
+import { metersToMiles, distanceToPrice, secondsToMinutes } from '../functions/functions.js';
 
-function setLocation(name, lat, lng) {
-  return {
-    name,
-    location: { lat, lng },
-  };
-}
-
-
-type GMapsLocations = {
-  lat: Function,
-  lng: Function,
-};
-
-type Location = {
-  name: string,
-  location: GMapsLocations,
-};
-
-type Props = {
-  origin?: Location,
-  destination?: Location,
-  waypoints?: Array<Location>,
-  hasSubmited?: boolean,
-  date?: {},
-  isReturnJourney?: boolean,
-  passengers?: number,
-  totalDistance?: number,
-  totalDuration?: number,
-};
+type Props = {};
 
 class Home extends React.Component<Props> {
-  static timeDelayInMinutes = 30;
-
-  static defaultProps = {
-    origin: setLocation('Aberdeen, UK', 57.149717, -2.094278000000031),
-    destination: setLocation('Aylesbury, UK', 51.815606, -0.808400000000006),
-    waypoints: [
-      null,
-      null,
-      setLocation('Birmingham, UK', 52.48624299999999, -1.8904009999999971),
-    ],
-    hasSubmited: false,
-    date: addMinutes(new Date(), Home.timeDelayInMinutes),
-    isReturnJourney: false,
-    passengers: 1,
-    totalDistance: 0,
-    totalDuration: 0,
-  };
-
   state = {
-    dateError: '',
-  };
-
-  constructor(props) {
-    super(props);
-
-    this.state = { ...this.state, ...props };
-  }
-
-
-  setPlace = (placeData, place, waypointIndex) => {
-    if (!placeData || isError(placeData) || !placeData.geometry) {
-      return;
-    }
-
-    const { waypoints } = this.state;
-    const { geometry, formatted_address: name } = placeData;
-    const { location } = geometry;
-    let newPlaceData = {
-      name,
-      location: {
-        lat: location.lat(),
-        lng: location.lng(),
-      },
-    };
-
-    console.log(name, { lat: location.lat(), lng: location.lng() });
-
-    if (place === 'waypoints') {
-      const newWaypoints = waypoints.slice();
-
-      newWaypoints[waypointIndex] = newPlaceData;
-      newPlaceData = newWaypoints;
-    }
-
-    this.setState({
-      [place]: newPlaceData,
-    });
+    booking: {},
+    totalDuration: 0,
+    totalDistance: 0,
   };
 
 
-  setDateTime = (date) => {
-    const futureDate = addMinutes(new Date(), this.timeDelayInMinutes);
-    let dateError = '';
-
-    if (isBefore(date, futureDate)) {
-      dateError = 'Set a time that is in the future';
-    }
-
-    this.setState({ date, dateError });
+  setBooking = (booking) => {
+    this.setState({ booking });
   };
 
+  sendToServer = () => {
+    const { booking, totalDuration, totalDistance } = this.state;
+    const finalBooking = { ...booking, totalDuration, totalDistance };
+    
 
-  addWaypoint = () => {
-    this.setState((prevState) => {
-      const { waypoints } = prevState;
-      const newWaypoints = waypoints.slice();
-
-      newWaypoints.push(null);
-
-      return {
-        waypoints: newWaypoints,
-      };
-    });
-  };
-
-  getViaInputs = () => {
-    const { addViaInputs } = this.state;
-    const inputs = [];
-    let i = 0;
-
-    while (i < addViaInputs) {
-      i += 1;
-
-      inputs.push(
-        <Autocomplete key={i} label={`Via ${i}`} setPlace={places => this.setPlace('via', places)} />,
-      );
-    }
-
-    return inputs;
+    // Meteor.call('booking.addNew', finalBooking);
+    console.log('sending to server now ', finalBooking);
+    alert('you have made a booking');
   }
-
-  clear = () => {
-    this.setState({
-      origin: null,
-      destination: null,
-      waypoints: [],
-      hasSubmited: false,
-      date: addMinutes(new Date(), this.timeDelayInMinutes),
-    });
-  }
-
-
-  makeBooking = () => {
-    const booking = this.state;
-
-    delete booking.dateError;
-
-    console.log(booking);
-
-    // Meteor.call('bookings.addNew', booking);
-
-    // this.setState({ hasSubmited: true });
-  }
-
 
   render() {
+    const {
+      booking,
+      totalDuration,
+      totalDistance,
+    } = this.state;
+
+    const defaultBooking = {
+      origin: null,
+      destination: null,
+      waypoints: null,
+    };
+
     const {
       origin,
       destination,
       waypoints,
-      hasSubmited,
-      date,
-      dateError,
-      isReturnJourney,
-      passengers,
-      totalDistance,
-      totalDuration,
-    } = this.state;
+    } = booking || defaultBooking;
+
 
     return (
       <div className="row">
@@ -193,110 +56,56 @@ class Home extends React.Component<Props> {
             <h1>Book in under a minute</h1>
             <p>Airport transfers, taxis and executive cars</p>
           </header>
-          <div className="text-center">
-            <div className="mb-3">
-              <Autocomplete
-                label="Pick up"
-                setPlace={places => this.setPlace(places, 'origin')}
-                defaultValue={origin}
-              />
-              <Autocomplete
-                label="Destination"
-                setPlace={places => this.setPlace(places, 'destination')}
-                defaultValue={destination}
-              />
-            </div>
 
-            <div>
-              <Fab
-                size="small"
-                color="primary"
-                variant="extended"
-                aria-label="add via location"
-                onClick={this.addWaypoint}
-              >
-                Add Via
-              </Fab>
-              <br />
-
-              {waypoints.map((waypoint, index) => (
-                <Autocomplete
-                  key={index}
-                  label={`Via ${index + 1}`}
-                  setPlace={places => this.setPlace(places, 'waypoints', index)}
-                  defaultValue={waypoint}
-                />
-              ))}
-
-              <DateTime
-                date={date}
-                label={dateError || 'Departure time'}
-                onChange={this.setDateTime}
-                minDate={addMinutes(new Date(), this.timeDelayInMinutes)}
-              />
-            </div>
-
-            <div>
-              <Checkbox
-                label="Return Journey"
-                isChecked={isReturnJourney}
-                onChange={event => this.setState({ isReturnJourney: event.currentTarget.checked })}
-              />
-            </div>
-
-            <div className="mb-3">
-              <span>
-                Passengers:&nbsp;
-                {passengers}
-              </span>
-              <Slider
-                value={passengers}
-                min={0}
-                max={10}
-                step={1}
-                onChange={(event, value) => this.setState({ passengers: value })}
-              />
-            </div>
-
-            <div>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={this.makeBooking}
-                disabled={!(origin && destination && !dateError)}
-              >
-                Get Quotes
-              </Button>
-              <Button
-                onClick={() => this.clear}
-                disabled={!(origin && destination && !dateError)}
-              >
-                Reset
-              </Button>
-            </div>
+          <div className="p-3">
+            <SmallBookingForm
+              setBooking={this.setBooking}
+              {...booking}
+            />
           </div>
         </div>
-        {hasSubmited && (
-          <div className="col-sm-6">
-            <Map
-              {...{
-                origin,
-                destination,
-                waypoints,
-                totalDuration,
-                totalDistance,
-              }}
 
-              setDuration={duration => this.setState({ totalDuration: duration })}
-              setDistance={distance => this.setState({ totalDistance: distance })}
-            />
-            <Vehicles />
-          </div>
-        )}
+        <div className="col-sm-6">
+          {origin && destination && waypoints && (
+            <div>
+              <div className="mb-3">
+                <Map
+                  {...{
+                    origin,
+                    destination,
+                    waypoints,
+                  }}
+                  setDistanceAndDuration={
+                    durationAndDurationObj => this.setState(durationAndDurationObj)
+                  }
+                />
+              </div>
+
+              <div className="border border-success p-3 rounded mb-3">
+                <div>
+                  <span className="text-muted small">Distance:&nbsp;</span>
+                  {metersToMiles(totalDistance)}
+                  &nbsp;miles
+                </div>
+                <div>
+                  <span className="text-muted small">Duration:&nbsp;</span>
+                  {secondsToMinutes(totalDuration)}
+                </div>
+                <div>
+                  <span className="text-muted small">cost:</span>
+                  &nbsp;$
+                  {distanceToPrice(totalDuration, 2.5)}
+                </div>
+              </div>
+              <div className="mb-3">
+                <button type="button" onClick={this.sendToServer}>Book</button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
 }
 
 export default Home;
-

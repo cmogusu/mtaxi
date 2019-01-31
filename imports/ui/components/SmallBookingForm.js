@@ -164,6 +164,8 @@ class SmallBookingForm extends React.Component<Props> {
       passengers,
     } = this.state;
 
+    const canShowSubmitButton = origin && destination && date && !dateError;
+
     return (
       <div className="text-center">
         <div className="mb-3">
@@ -242,13 +244,13 @@ class SmallBookingForm extends React.Component<Props> {
             variant="contained"
             color="primary"
             onClick={this.makeBooking}
-            disabled={!(origin && destination && !dateError)}
+            disabled={!canShowSubmitButton}
           >
             Get Quotes
           </Button>
           <Button
             onClick={() => this.clear}
-            disabled={!(origin && destination && !dateError)}
+            disabled={!canShowSubmitButton}
           >
             Reset
           </Button>

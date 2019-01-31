@@ -2,7 +2,6 @@
 import * as React from 'react';
 import { throttle, isEqual } from 'lodash';
 import withGoogle from '../functions/withGoogle.js';
-import { metersToMiles, distanceToPrice, secondsToMinutes } from '../functions/functions.js';
 
 type GMapsLocations = {
   lat: Function,
@@ -23,10 +22,7 @@ type Props = {
     name: string,
     location: GMapsLocations,
   }>,
-  totalDistance: number,
-  totalDuration: number,
-  setDuration: Function,
-  setDistance: Function,
+  setDistanceAndDuration: Function,
 };
 
 type State = {};
@@ -42,8 +38,6 @@ class Map extends React.Component<Props, State> {
   directionsService = null;
 
   directionsRenderer = null;
-
-  totalDuration = 0;
 
   constructor(props) {
     super(props);
@@ -124,7 +118,7 @@ class Map extends React.Component<Props, State> {
 
 
   processResults = (results, status) => {
-    const { google, setDuration, setDistance } = this.props;
+    const { google, setDistanceAndDuration } = this.props;
 
     if (status !== 'OK') {
       console.log('unable to get directons');
@@ -149,8 +143,10 @@ class Map extends React.Component<Props, State> {
 
     this.directionsRenderer.setDirections(results);
 
-    setDistance(totalDistance);
-    setDuration(totalDuration);
+    setDistanceAndDuration({
+      totalDuration,
+      totalDistance,
+    });
   };
 
 
@@ -171,31 +167,8 @@ class Map extends React.Component<Props, State> {
     });
   }
 
-
   render() {
-    const { totalDistance, totalDuration } = this.props;
-
-    return (
-      <div>
-        <div id="map" ref={(element) => { this.mapElement = element; }} />
-        <div>
-          <span>
-            Distance:&nbsp;
-            {metersToMiles(totalDistance)}
-            miles
-          </span>
-          <span>
-            Duration:&nbsp;
-            {secondsToMinutes(totalDuration)}
-            mins
-          </span>
-          <span>
-            cost: $
-            {distanceToPrice(totalDuration, 2.5)}
-          </span>
-        </div>
-      </div>
-    );
+    return <div id="map" ref={(element) => { this.mapElement = element; }} />;
   }
 }
 

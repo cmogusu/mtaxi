@@ -1,4 +1,6 @@
 // @flow
+import { once } from 'lodash';
+
 export const loadScript = (script: string): void => {
   const theScript = document.createElement('script');
   theScript.setAttribute('src', script);
@@ -21,11 +23,12 @@ export const createMapsReadyEvent = (eventName: string): void => {
   }
 };
 
-export function loadGoogle(): void {
+function loadGoogleScript() {
   loadScript('https://maps.googleapis.com/maps/api/js?key=AIzaSyBGraz0piF8xyoi2zAdb8xKTooF_8wqunc&callback=initMap&libraries=places');
   createMapsReadyEvent('googleReady');
 }
 
+export const loadGoogle = once(loadGoogleScript);
 
 export function metersToMiles(distanceInMeters: number): number {
   if (distanceInMeters === 0) {
