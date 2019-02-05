@@ -22,11 +22,9 @@ class Home extends React.Component<Props> {
   sendToServer = () => {
     const { booking, totalDuration, totalDistance } = this.state;
     const finalBooking = { ...booking, totalDuration, totalDistance };
-    
 
-    // Meteor.call('booking.addNew', finalBooking);
-    console.log('sending to server now ', finalBooking);
-    alert('you have made a booking');
+    Meteor.call('bookings.addNew', finalBooking);
+    console.log(finalBooking);
   }
 
   render() {

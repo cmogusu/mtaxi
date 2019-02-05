@@ -16,7 +16,7 @@ type Props = {
 };
 
 
-class Bookings extends React.Component<Props> {
+class Jobs extends React.Component<Props> {
   state = {
     isAddingNewBooking: false,
   }
@@ -90,4 +90,4 @@ export default withTracker(() => {
       },
     }).fetch(),
   };
-})(Bookings);
+})(Jobs);

@@ -71,7 +71,7 @@ class AutocompleteInput extends React.Component<Props> {
   renderAutocomplete() {
     const { google } = this.props;
 
-    if (this.autocomplete || !google) {
+    if (this.autocomplete || !google || !this.element) {
       return;
     }
 
@@ -87,12 +87,16 @@ class AutocompleteInput extends React.Component<Props> {
 
 
   render() {
-    const { label, defaultValue } = this.props;
+    const { label, defaultValue, google } = this.props;
     const { name } = defaultValue || { name: '' };
+
+    if (!this.autocomplete) {
+      this.renderAutocomplete();
+    }
 
     return (
       <TextField
-        id={`autocomplete-${camelCase(label)}`}
+        id={`autocomplete-${camelCase(label)}-${Math.floor(Math.random() * 1000)}`}
         inputRef={(element) => { this.element = element; }}
         type="text"
         label={label}

@@ -8,7 +8,7 @@ type Props = {
   passengers: number,
   luggage: number,
   price: number,
-  isSelected: Function,
+  editVehicle: Function,
 };
 
 function Vehicle(props: Props) {
@@ -19,7 +19,7 @@ function Vehicle(props: Props) {
     passengers,
     luggage,
     price,
-    isSelected,
+    editVehicle,
   } = props;
 
   return (
@@ -44,7 +44,7 @@ function Vehicle(props: Props) {
       </div>
       <div className="col-sm-4">
         <h4>{price}</h4>
-        <button type="submit" onClick={isSelected}>Select Vehicle</button>
+        <button type="submit" onClick={editVehicle}>Edit</button>
       </div>
     </div>
   );

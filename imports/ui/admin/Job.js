@@ -27,7 +27,7 @@ type Props = {
   totalDuration?: number,
 };
 
-class Booking extends React.Component<Props> {
+class Job extends React.Component<Props> {
   static defaultProps = {
     _id: null,
     origin: {
@@ -117,4 +117,4 @@ class Booking extends React.Component<Props> {
   }
 }
 
-export default Booking;
+export default Job;

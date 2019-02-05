@@ -75,10 +75,38 @@ Meteor.methods({
       owner: this.userId,
       username: Meteor.users.findOne(this.userId).username,
     };
-    
+
     console.log('booking now', obj);
 
     BookingsCollection.insert(obj);
+  },
+  'bookings.update'(_id, booking) {
+    check(_id, String);
+    check(booking, Object);
+
+    if (!this.userId) {
+      throw new Meteor.Error('no way in looser!');
+    }
+
+    const obj = {
+      ...booking,
+      createdAt: new Date(),
+      owner: this.userId,
+      username: Meteor.users.findOne(this.userId).username,
+    };
+
+    console.log('booking now', obj);
+
+    BookingsCollection.update(_id, { $set: { ...booking } });
+  },
+  'bookings.remove'(_id) {
+    check(_id, String);
+
+    if (!this.userId) {
+      throw new Meteor.Error('no way in looser!');
+    }
+
+    BookingsCollection.remove(_id);
   },
 
 });

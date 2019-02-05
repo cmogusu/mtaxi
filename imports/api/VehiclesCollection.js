@@ -2,28 +2,30 @@ import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { check } from 'meteor/check';
 import { forEach } from 'lodash';
-// import SimpleSchema from 'meteor/aldeed:simple-schema';
-
-
-const VehiclesCollection = new Mongo.Collection('vehicles');
 
 /*
-Vehicles.schema = new SimpleSchema({
-  img: {
+import SimpleSchema from 'simpl-schema';
+
+
+
+
+
+const vehicleSchema = new SimpleSchema({
+  imgUrl: {
     type: String,
-    label: 'User id of owner',
+    label: 'Url of vehicle image',
   },
   name: {
     type: String,
-    label: 'User id of owner',
+    label: 'Vehicle name',
   },
   vehicleClass: {
     type: String,
-    label: 'User id of owner',
+    label: 'Class of vehicle',
   },
   passengers: {
-    type: String,
-    label: 'User id of owner',
+    type: SimpleSchema.Number,
+    label: 'Number of passenges',
   },
   luggage: {
     type: String,
@@ -46,7 +48,12 @@ Vehicles.schema = new SimpleSchema({
     label: 'User id of owner',
   },
 });
+
+VehiclesCollection.attachSchema(vehicleSchema);
+
 */
+
+const VehiclesCollection = new Mongo.Collection('vehicles');
 
 if (Meteor.isServer) {
   Meteor.publish('vehicles', () => VehiclesCollection.find());
@@ -72,17 +79,34 @@ Meteor.methods({
     VehiclesCollection.insert(obj);
   },
 
-  'vehicles.remove'(taskId) {
-    check(taskId, String);
+  'vehicles.update'(_id, booking) {
+    check(_id, String);
+    check(booking, Object);
 
-    VehiclesCollection.remove(taskId);
+    if (!this.userId) {
+      throw new Meteor.Error('no way in looser!');
+    }
+
+    const obj = {
+      ...booking,
+      createdAt: new Date(),
+      owner: this.userId,
+      username: Meteor.users.findOne(this.userId).username,
+    };
+
+    console.log('vehicling now', obj);
+
+    VehiclesCollection.update(_id, { $set: { ...booking } });
   },
 
-  'vehicles.setChecked'(taskId, isChecked) {
-    check(taskId, String);
-    check(isChecked, Boolean);
+  'vehicles.remove'(_id) {
+    check(_id, String);
 
-    VehiclesCollection.update(taskId, { $set: { checked: isChecked } });
+    if (!this.userId) {
+      throw new Meteor.Error('no way in looser!');
+    }
+
+    VehiclesCollection.remove(_id);
   },
 });
 

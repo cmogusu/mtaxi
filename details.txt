@@ -1,0 +1,35 @@
+Master:
+This will be us as the owners of the site, so we will set up the site and have 100% control over the site, access to all options, and the only user to be allowed to create Subscriber users.
+
+Subscriber:
+This will be the client who may change from time to time, so their dashboard should allow them to:
+
+    • Create Operator users
+    • See, manage, cancel, edit and dispatch jobs
+    • Set prices, drivers, cars, business accounts, 
+    • Run reports like no of jobs, total sales, cash jobs, account jobs, jobs per driver or car, value of jobs per driver or car or per day or week or date range
+
+Operator:
+This is the employee of the subscriber who will act as the dispatcher, so their dashboard should be restricted to:
+
+    • See, manage, edit, cancel and dispatch jobs
+
+////////////////////////////
+
+Booking Type
+    • Personal
+    • Business
+    • On Behalf
+All boking details from the quote engine should be auto filled (pickup destination bags passengers)
+Customer First Name
+Customer Last Name
+Email 
+Telephone
+Baggage Details 
+Notes
+Voucher Code
+Payment Option
+    • Credit Card
+    • Paypal
+    • Cash
+Flight Number 
