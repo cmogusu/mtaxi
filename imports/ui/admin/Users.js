@@ -23,12 +23,6 @@ class Users extends React.Component<Props> {
   };
 
   createUser = (newUser) => {
-    console.log(newUser);
-    this.setState({
-      isAddingNewUser: false,
-      activeUserIndex: -1,
-    });
-
     const {
       username,
       password,
@@ -38,15 +32,42 @@ class Users extends React.Component<Props> {
 
     const user = { username, password };
     const extraUserData = { imgUrl };
-    
-    console.log(user, role, extraUserData);
-    // Meteor.call(newUser);
+
+    Meteor.call('users.add', user, role, extraUserData);
+
+    this.setState({
+      isAddingNewUser: false,
+    });
   };
 
 
   updateUser = (updatedUser) => {
-    console.log(updatedUser);
-    // Meteor.call('users.update', updatedUser);
+    const { activeUserIndex } = this.state;
+    const { users } = this.props;
+    const {
+      _id: userId,
+      username: oldUsername,
+      role: oldRole,
+      imgUrl: oldImgUrl,
+    } = users[activeUserIndex];
+    const {
+      username: newUsername,
+      role: newRole,
+      imgUrl: newImgUrl,
+    } = updatedUser;
+
+    const password = '';
+    const username = (oldUsername === newUsername) ? '' : newUsername;
+    const role = (oldRole === newRole) ? '' : newRole;
+    const extraUserData = (oldImgUrl === newImgUrl) ? {} : { imgUrl: newImgUrl };
+
+    console.log('users.update', userId, username, password, role, extraUserData);
+    Meteor.call('users.update', userId, username, password, role, extraUserData);
+
+    this.setState({
+      activeUserIndex: -1,
+      isAddingNewUser: false,
+    });
   };
 
 
@@ -56,6 +77,7 @@ class Users extends React.Component<Props> {
       activeUserIndex: index,
     });
   };
+
 
   deleteUser = (userId) => {
     console.log('user id', userId);

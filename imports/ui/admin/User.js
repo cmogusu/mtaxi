@@ -21,7 +21,6 @@ function User(props: Props) {
   } = props;
 
   const { default: defaultRoles } = roles;
-  //console.log(roles);
   const role = defaultRoles ? defaultRoles.join(', ') : '';
 
   return (

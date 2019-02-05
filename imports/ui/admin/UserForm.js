@@ -9,7 +9,7 @@ type Props = {
   username?: string,
   password?: string,
   imgUrl?: string,
-  role?: string,
+  roles?: {},
   buttonLabel?: string,
   setUser: Function,
 };
@@ -20,7 +20,9 @@ class UserForm extends React.Component<Props> {
     username: `user${Math.floor(Math.random() * 1000)}`,
     password: `password${Math.floor(Math.random() * 1000)}`,
     imgUrl: '',
-    role: 'client',
+    roles: {
+      default: [],
+    },
     buttonLabel: 'Add New',
   };
 
@@ -49,7 +51,9 @@ class UserForm extends React.Component<Props> {
   constructor(props) {
     super(props);
 
-    const { role, imgUrl } = props;
+    const { roles, imgUrl } = props;
+    const { default: defaultRoles } = roles;
+    const role = defaultRoles ? defaultRoles.join(', ') : '';
 
     this.state.role = role;
     this.state.imgUrl = imgUrl;

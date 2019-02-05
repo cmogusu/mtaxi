@@ -27,17 +27,19 @@ users.map((user) => {
 });
 */
 
+/*
 Accounts.validateNewUser(() => {
   const loggedInUser = Meteor.user();
+  const isAdmin = loggedInUser && loggedInUser.username === 'admin';
 
-  if (loggedInUser.username === 'admin'
-    || Roles.userIsInRole(loggedInUser, ['manager', 'subscriber'], 'default')
+  if (isAdmin || Roles.userIsInRole(loggedInUser, ['manager', 'subscriber'], 'default')
   ) {
     return true;
   }
 
   return false;
 });
+*/
 /*
 Accounts.onCreateUser((options, user) => {
   const { role } = options;
@@ -58,6 +60,7 @@ Meteor.methods({
     const userId = Accounts.createUser(user);
 
     Roles.addUsersToRoles(userId, role, 'default');
+
     Meteor.users.update(userId, {
       $set: { ...extraUserData },
     });
@@ -80,23 +83,32 @@ Meteor.methods({
     check(userId, String);
     check(role, String);
 
-    Roles.setUserRoles(userId, role);
+    Roles.setUserRoles(userId, role, 'default');
   },
 
 
-  'users.update'(userId, updateDetails) {
+  'users.update'(userId, username, password, role, extraUserData) {
     check(userId, String);
-    check(updateDetails, Object);
+    check(username, String);
+    check(password, String);
+    check(role, String);
+    check(extraUserData, Object);
 
-    const { role } = updateDetails;
-
-    if (role) {
-      Roles.setUserRoles(userId, role);
+    if (username) {
+      Accounts.setUsername(userId, username);
     }
 
-    if (!isEmpty(updateDetails)) {
+    if (password) {
+      Accounts.setPassword(userId, password);
+    }
+
+    if (role) {
+      Roles.setUserRoles(userId, role, 'default');
+    }
+
+    if (!isEmpty(extraUserData)) {
       Meteor.users.update(userId, {
-        $set: { ...updateDetails },
+        $set: { ...extraUserData },
       });
     }
   },
@@ -105,12 +117,10 @@ Meteor.methods({
 
 Meteor.publish('masterUserList', () => {
   const loggedInUser = Meteor.user();
-  if (loggedInUser.username === 'admin'
-    || Roles.userIsInRole(loggedInUser, ['manager', 'subscriber'], 'default')
+  const isAdmin = loggedInUser && loggedInUser.username === 'admin';
+
+  if (isAdmin || Roles.userIsInRole(loggedInUser, ['manager', 'subscriber'], 'default')
   ) {
     return Meteor.users.find();
   }
-
-  this.stop();
-  return;
 });
